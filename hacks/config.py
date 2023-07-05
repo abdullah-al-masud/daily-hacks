@@ -1,0 +1,35 @@
+from yacs.config import CfgNode as CN
+
+
+_C = CN()
+_C.DATA = CN()
+_C.MODEL = CN()
+_C.PROCESS = CN()
+_C.MODEL.MODEL_PARAM = CN()
+_C.MODEL.HYPER_PARAM = CN()
+
+
+_C.DATA.DATA_DIR = 'data/mRI-multi-modal'
+_C.DATA.OUTPUT_DIR = 'outputs/visualization'
+
+
+_C.PROCESS.STACK_FRAME = 3
+_C.PROCESS.SPLIT_BY = 'subject'   # subject | activity
+
+_C.MODEL.MODEL_PARAM.GNN_LAYER = 3
+_C.MODEL.MODEL_PARAM.GNN_NODE_UNIT = 64
+_C.MODEL.MODEL_PARAM.GNN_EDGE_UNIT = 32
+
+_C.MODEL.MODEL_PARAM.LSTM_LAYER = 2
+_C.MODEL.MODEL_PARAM.LSTM_UNIT = 128
+_C.MODEL.MODEL_PARAM.LSTM_STACK = 20
+
+_C.MODEL.MODEL_PARAM.FCN_LAYER = 2
+_C.MODEL.MODEL_PARAM.FCN_UNIT = 512
+
+
+
+
+def get_cfg_defaults():
+  return _C.clone()
+
