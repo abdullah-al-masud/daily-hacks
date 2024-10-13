@@ -3,23 +3,35 @@ import numpy as np
 import os
 import yt_dlp
 import pandas as pd
+import argparse
 
 
 def video_download(file_path):
     """
     must be a csv or txt file
-    Column names will be {url, height}
+    Column names will be {url, height, format}
+    format and height are not mandatory, by default videos will be downloaded
+    To download audio, put audio format in the format column such as "m4a"
     
     txt or csv format
     
-    url,height
-    svjnsdvljsndvlsdnvlsd,1080
+    url,height,format
+    svjnsdvljsndvlsdnvlsdhttps://www.youtube.com/watch?v=tAGnKpE4NCI,1080,mp4
     """
 
+    fixed_columns = ['url', 'height', 'format']
     data = pd.read_csv(file_path)
+    for c in fixed_columns:
+        if c not in data.columns:
+            data[c] = None
+    data.drop_duplicates(data.columns, inplace=True)
+
     for i in range(data.shape[0]):
+        opts = {}
         if not pd.isnull(data['height'].iloc[i]):
-            opts = {'format': 'bv*[height=%d]+ba'%data['height'].iloc[i]}
+            opts['format'] = 'bv*[height=%d]+ba'%data['height'].iloc[i]
+        elif not pd.isnull(data['format'].iloc[i]):
+            opts['format'] = data['format'].iloc[i]
         else:
             opts = {}
         with yt_dlp.YoutubeDL(opts) as ydl:
@@ -77,3 +89,8 @@ def video_cutter(path, outdir, segments, segment_type):
     store.release()
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file', type=str, help="csv file path containing columns ['url', 'height', 'format']")
+    args = parser.parse_args()
+    video_download(args.file)
